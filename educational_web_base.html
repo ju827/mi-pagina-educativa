@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma Educativa</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f3f4f6; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1, h2 { text-align: center; }
+    .section { margin-bottom: 30px; }
+    input, button { padding: 10px; margin: 5px 0; width: 100%; }
+    #dashboard, #docente-panel { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ingreso a Plataforma Educativa</h1>
+    <div id="login-section">
+      <input type="text" id="codigo" placeholder="Ingresa tu código">
+      <button onclick="ingresar()">Ingresar</button>
+    </div>
+
+    <!-- Panel Estudiante -->
+    <div id="dashboard">
+      <h2>Bienvenido estudiante</h2>
+      <div class="section">
+        <h3>Gráfico de Notas</h3>
+        <canvas id="graficoNotas" width="400" height="200"></canvas>
+      </div>
+      <div class="section">
+        <h3>Recomendaciones</h3>
+        <p id="recomendaciones"></p>
+      </div>
+    </div>
+
+    <!-- Panel Docente -->
+    <div id="docente-panel">
+      <h2>Bienvenido docente</h2>
+      <div class="section">
+        <h3>Estudiantes</h3>
+        <ul id="listaEstudiantes"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simulación de base de datos (puede conectarse con Firebase después)
+    const usuarios = {
+      "1234": { rol: "estudiante", notas: [3.5, 4.0, 4.5], nombre: "Luis" },
+      "9999": { rol: "docente", estudiantes: ["Luis", "María"] }
+    };
+
+    function ingresar() {
+      const codigo = document.getElementById("codigo").value;
+      const user = usuarios[codigo];
+
+      if (user) {
+        document.getElementById("login-section").style.display = "none";
+        if (user.rol === "estudiante") {
+          document.getElementById("dashboard").style.display = "block";
+          mostrarGrafico(user.notas);
+          mostrarRecomendaciones(user.notas);
+        } else if (user.rol === "docente") {
+          document.getElementById("docente-panel").style.display = "block";
+          mostrarEstudiantes(user.estudiantes);
+        }
+      } else {
+        alert("Código incorrecto");
+      }
+    }
+
+    function mostrarGrafico(notas) {
+      new Chart(document.getElementById("graficoNotas"), {
+        type: 'line',
+        data: {
+          labels: ["Unidad 1", "Unidad 2", "Unidad 3"],
+          datasets: [{
+            label: 'Notas',
+            data: notas,
+            borderColor: 'blue',
+            fill: false
+          }]
+        }
+      });
+    }
+
+    function mostrarRecomendaciones(notas) {
+      let promedio = notas.reduce((a, b) => a + b) / notas.length;
+      let texto = promedio < 4 ? "Necesitás repasar más los conceptos clave. Consultá los materiales y hacé los quizzes." : "¡Buen trabajo! Seguí así y revisá los temas nuevos.";
+      document.getElementById("recomendaciones").innerText = texto;
+    }
+
+    function mostrarEstudiantes(lista) {
+      const ul = document.getElementById("listaEstudiantes");
+      lista.forEach(nombre => {
+        let li = document.createElement("li");
+        li.textContent = nombre;
+        ul.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
